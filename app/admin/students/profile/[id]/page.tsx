@@ -1,10 +1,10 @@
 // src/app/admin/students/profile/[id]/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense , useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-export default function StudentProfilePage() {
+function StudentProfile() {
   const params = useParams();
   const router = useRouter();
   const studentId = params.id;
@@ -135,5 +135,14 @@ export default function StudentProfilePage() {
         )}
       </div>
     </div>
+  );
+}
+
+
+export default function StudentProfilePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StudentProfile />
+    </Suspense>
   );
 }

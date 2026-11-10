@@ -1,9 +1,9 @@
 // src/app/admin/students/page.tsx
 'use client';
-
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function StudentsIndexPage() {
+function StudentProfile() {
   const router = useRouter();
 
   // Aap apni zaroorat ke mutabiq classes yahan add kar sakte hain
@@ -42,5 +42,13 @@ export default function StudentsIndexPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function StudentProfilePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StudentProfile />
+    </Suspense>
   );
 }

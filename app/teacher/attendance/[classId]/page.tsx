@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense , useState, useEffect } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 
-export default function AttendancePage() {
+function Attendance() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -159,5 +159,14 @@ export default function AttendancePage() {
         </div>
       )}
     </div>
+  );
+}
+
+
+export default function AttendancePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Attendance />
+    </Suspense>
   );
 }

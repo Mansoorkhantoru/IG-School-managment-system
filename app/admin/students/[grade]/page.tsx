@@ -1,7 +1,7 @@
 // src/app/admin/students/[grade]/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 interface Student {
@@ -12,16 +12,18 @@ interface Student {
   grade: string;
 }
 
-export default function GradeStudentsPage() {
+function GradeStudents() {
   const params = useParams();
   const router = useRouter();
   
-  const rawGrade = params?.grade ? (Array.isArray(params.grade) ? params.grade[0] : params.grade) : '';
+  // URL se grade decode karein (e.g. "Grade-10" ko "Grade 10" banayein)
+  const rawGrade = Array.isArray(params.grade) ? params.grade[0] : params.grade;
   const currentGrade = rawGrade ? decodeURIComponent(rawGrade).replace('-', ' ') : '';
 
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Form states (Pre-filled with current grade)
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [rollNumber, setRollNumber] = useState('');
@@ -32,6 +34,7 @@ export default function GradeStudentsPage() {
       const res = await fetch('/api/students');
       const data = await res.json();
       if (data.success) {
+        // Sirf is specific grade ke students filter karein
         const filtered = data.data.filter(
           (s: Student) => s.grade.toLowerCase() === currentGrade.toLowerCase()
         );
@@ -88,6 +91,7 @@ export default function GradeStudentsPage() {
 
       <h1 className="text-3xl font-bold mb-6 text-gray-800">{currentGrade} Students</h1>
 
+      {/* Add Student Form for this specific grade */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-100">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">Add Student to {currentGrade}</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -125,6 +129,7 @@ export default function GradeStudentsPage() {
         </form>
       </div>
 
+      {/* Students Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
         <div className="p-6 pb-4 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-700">Enrolled Students</h2>
@@ -174,19 +179,11 @@ export default function GradeStudentsPage() {
   );
 }
 
-// Netlify static export/prerender error se bachne ke liye grade paths define karein
-export function generateStaticParams() {
-  return [
-    { grade: 'Grade-0' },
-    { grade: 'Grade-1' },
-    { grade: 'Grade-2' },
-    { grade: 'Grade-3' },
-    { grade: 'Grade-4' },
-    { grade: 'Grade-5' },
-    { grade: 'Grade-6' },
-    { grade: 'Grade-7' },
-    { grade: 'Grade-8' },
-    { grade: 'Grade-9' },
-    { grade: 'Grade-10' },
-  ];
+
+export default function GradeStudentsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GradeStudents />
+    </Suspense>
+  );
 }

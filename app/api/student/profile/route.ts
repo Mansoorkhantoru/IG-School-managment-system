@@ -13,7 +13,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, error: 'Student ID missing' }, { status: 400 });
     }
 
-    const db = mongoose.connection.db;
+    const db = mongoose.connection.db!;
     const student = await db.collection('students').findOne({
       _id: new mongoose.Types.ObjectId(id)
     });
@@ -22,7 +22,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, error: 'Student not found' }, { status: 404 });
     }
 
-    // Fetch attendance history for this student
     const attendanceDocs = await db.collection('attendances').find({}).toArray();
     const attendanceHistory: any[] = [];
 

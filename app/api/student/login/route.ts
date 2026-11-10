@@ -15,12 +15,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const db = mongoose.connection.db;
+    const db = mongoose.connection.db!;
     const cleanGrade = grade.trim();
     const cleanRoll = rollNumber.trim();
     const cleanPassword = password.trim();
 
-    // Grade AUR Roll Number dono ko exact match karein
     const student = await db.collection('students').findOne({
       grade: { $regex: new RegExp(`^${cleanGrade}$`, 'i') },
       rollNumber: { $regex: new RegExp(`^${cleanRoll}$`, 'i') }
@@ -33,7 +32,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Password verification (Default: Roll Number)
     const isPasswordValid = student.password 
       ? student.password === cleanPassword 
       : cleanPassword.toLowerCase() === cleanRoll.toLowerCase();
@@ -51,7 +49,6 @@ export async function POST(req: Request) {
       student: { id: student._id, name: student.name, rollNumber: student.rollNumber, grade: student.grade }
     });
 
-    // Set persistent session cookie
     response.cookies.set('studentId', student._id.toString(), {
       httpOnly: false,
       path: '/',
